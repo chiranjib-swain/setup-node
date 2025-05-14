@@ -98017,7 +98017,7 @@ const io = __importStar(__nccwpck_require__(4994));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
 const path_1 = __importDefault(__nccwpck_require__(6928));
 function getNodeVersionFromFile(versionFilePath) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f, _g;
     if (!fs_1.default.existsSync(versionFilePath)) {
         throw new Error(`The specified node version file at: ${versionFilePath} does not exist`);
     }
@@ -98032,12 +98032,17 @@ function getNodeVersionFromFile(versionFilePath) {
             if ((_a = manifest.volta) === null || _a === void 0 ? void 0 : _a.node) {
                 return manifest.volta.node;
             }
-            if ((_b = manifest.engines) === null || _b === void 0 ? void 0 : _b.node) {
+            // support devEngines from npm 11
+            if (((_c = (_b = manifest.devEngines) === null || _b === void 0 ? void 0 : _b.runtime) === null || _c === void 0 ? void 0 : _c.name) === 'node' &&
+                manifest.devEngines.runtime.version) {
+                return manifest.devEngines.runtime.version;
+            }
+            if ((_d = manifest.engines) === null || _d === void 0 ? void 0 : _d.node) {
                 return manifest.engines.node;
             }
             // Support Volta workspaces.
             // See https://docs.volta.sh/advanced/workspaces
-            if ((_c = manifest.volta) === null || _c === void 0 ? void 0 : _c.extends) {
+            if ((_e = manifest.volta) === null || _e === void 0 ? void 0 : _e.extends) {
                 const extendedFilePath = path_1.default.resolve(path_1.default.dirname(versionFilePath), manifest.volta.extends);
                 core.info('Resolving node version from ' + extendedFilePath);
                 return getNodeVersionFromFile(extendedFilePath);
@@ -98054,11 +98059,11 @@ function getNodeVersionFromFile(versionFilePath) {
             return null;
         }
     }
-    catch (_f) {
+    catch (_h) {
         core.info('Node version file is not JSON file');
     }
     const found = contents.match(/^(?:node(js)?\s+)?v?(?<version>[^\s]+)$/m);
-    return (_e = (_d = found === null || found === void 0 ? void 0 : found.groups) === null || _d === void 0 ? void 0 : _d.version) !== null && _e !== void 0 ? _e : contents.trim();
+    return (_g = (_f = found === null || found === void 0 ? void 0 : found.groups) === null || _f === void 0 ? void 0 : _f.version) !== null && _g !== void 0 ? _g : contents.trim();
 }
 exports.getNodeVersionFromFile = getNodeVersionFromFile;
 function printEnvDetailsAndSetOutput() {
