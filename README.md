@@ -248,6 +248,7 @@ If the runner is not able to access github.com, any Nodejs versions requested du
  - [Using multiple operating systems and architectures](docs/advanced-usage.md#multiple-operating-systems-and-architectures)
  - [Publishing to npmjs and GPR with npm](docs/advanced-usage.md#publish-to-npmjs-and-gpr-with-npm)
  - [Publishing to npmjs and GPR with yarn](docs/advanced-usage.md#publish-to-npmjs-and-gpr-with-yarn)
+ - [Publishing to npm with Trusted Publisher (OIDC)](docs/advanced-usage.md#publishing-to-npm-with-trusted-publisher-oidc)
  - [Using private packages](docs/advanced-usage.md#use-private-packages)
 
 ## Recommended permissions

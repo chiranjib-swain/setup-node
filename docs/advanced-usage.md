@@ -446,6 +446,70 @@ To access private GitHub Packages within the same organization, go to "Manage Ac
 
 Please refer to the [Ensuring workflow access to your package - Configuring a package's access control and visibility](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#ensuring-workflow-access-to-your-package) for more details.
 
+## Publishing to npm with Trusted Publisher (OIDC)
+
+npm supports [Trusted Publishers](https://docs.npmjs.com/generating-provenance-statements), which lets you publish packages from GitHub Actions using OIDC instead of long-lived tokens.
+
+### Example workflow
+
+```yaml
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org/'
+      - run: npm ci
+      - run: npm publish --provenance --access public
+```
+
+> **Note:** Do **not** set `NODE_AUTH_TOKEN` when publishing with Trusted Publisher (OIDC). The OIDC token is exchanged automatically; providing `NODE_AUTH_TOKEN` will interfere with OIDC authentication.
+
+### Compatibility note
+
+Recent versions of `actions/setup-node` no longer set a default token automatically when `registry-url` is provided. If you previously relied on this behaviour, review your workflow to ensure `NODE_AUTH_TOKEN` is set explicitly for token-based publishing, or omitted entirely for OIDC publishing.
+
+### FAQ
+
+**Q: Do I need to set `NODE_AUTH_TOKEN` for Trusted Publisher (OIDC)?**
+
+No. OIDC does not require `NODE_AUTH_TOKEN`. Do not set it when using Trusted Publisher.
+
+### Troubleshooting
+
+If publishing fails with an authentication error when using Trusted Publisher, check whether `NODE_AUTH_TOKEN` is being set by another step or action in your workflow. Some actions populate this variable automatically, which can interfere with OIDC publishing.
+
+Clear the variable before publishing:
+
+```bash
+# Option 1 – unset in the same shell session
+unset NODE_AUTH_TOKEN
+
+# Option 2 – override inline
+NODE_AUTH_TOKEN="" npm publish --provenance --access public
+```
+
+Or use a workflow step with an explicit override:
+
+```yaml
+- run: npm publish --provenance --access public
+  env:
+    NODE_AUTH_TOKEN: ''
+```
+
 ## Use private mirror
 
 It is possible to use a private mirror hosting Node.js binaries. This mirror must be a full mirror of the official Node.js distribution.
