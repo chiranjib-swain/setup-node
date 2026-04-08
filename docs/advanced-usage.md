@@ -448,9 +448,22 @@ Please refer to the [Ensuring workflow access to your package - Configuring a pa
 
 ## Publishing to npm with Trusted Publisher (OIDC)
 
-npm supports [Trusted Publishers](https://docs.npmjs.com/generating-provenance-statements), which lets you publish packages from GitHub Actions using OIDC instead of long-lived tokens.
+npm supports [Trusted Publishers](https://docs.npmjs.com/trusted-publishers), which allow publishing packages from GitHub Actions using OpenID Connect (OIDC) instead of long-lived tokens.
 
-### Example workflow
+Trusted publishing improves security by eliminating long-lived npm tokens and using short-lived OIDC credentials.
+
+
+## Requirements
+
+Trusted publishing requires a compatible npm version:
+
+* **npm ≥ 11.5.1 (required)**
+* **Node.js 24 or newer (recommended)** — includes a compatible npm version by default
+
+> ⚠️ If npm is below 11.5.1, publishing will fail even if OIDC permissions are correctly configured.
+
+
+## Example workflow
 
 ```yaml
 name: Publish to npm
@@ -466,49 +479,87 @@ jobs:
     permissions:
       contents: read
       id-token: write
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v5
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org/'
+
       - run: npm ci
       - run: npm publish --provenance --access public
 ```
 
-> **Note:** Do **not** set `NODE_AUTH_TOKEN` when publishing with Trusted Publisher (OIDC). The OIDC token is exchanged automatically; providing `NODE_AUTH_TOKEN` will interfere with OIDC authentication.
+## Important
 
-### Compatibility note
+* `id-token: write` is required for OIDC authentication
+* `contents: read` is required for repository access
 
-Recent versions of `actions/setup-node` no longer set a default token automatically when `registry-url` is provided. If you previously relied on this behaviour, review your workflow to ensure `NODE_AUTH_TOKEN` is set explicitly for token-based publishing, or omitted entirely for OIDC publishing.
+OIDC authentication is handled automatically via GitHub’s identity token.
 
-### FAQ
 
-**Q: Do I need to set `NODE_AUTH_TOKEN` for Trusted Publisher (OIDC)?**
+## Authentication note
 
-No. OIDC does not require `NODE_AUTH_TOKEN`. Do not set it when using Trusted Publisher.
+`NODE_AUTH_TOKEN` is **not required** for Trusted Publisher (OIDC).
 
-### Troubleshooting
+* If present, it may be ignored when OIDC is correctly configured
+* However, behavior can vary depending on workflow setup and injected environment variables
 
-If publishing fails with an authentication error when using Trusted Publisher, check whether `NODE_AUTH_TOKEN` is being set by another step or action in your workflow. Some actions populate this variable automatically, which can interfere with OIDC publishing.
+> Recommended: **Do not set `NODE_AUTH_TOKEN`** when using OIDC to avoid unexpected conflicts.
 
-Clear the variable before publishing:
+
+## Compatibility note
+
+* OIDC publishing depends on npm support (≥ 11.5.1)
+* Using older Node.js versions (with older npm) will result in authentication failures
+* Clearing or unsetting `NODE_AUTH_TOKEN` **does not resolve failures caused by incompatible npm versions**
+
+
+## FAQ
+
+### Do I need to set `NODE_AUTH_TOKEN` for Trusted Publisher (OIDC)?
+
+No. OIDC replaces the need for tokens entirely.
+
+
+## Troubleshooting
+
+### Check npm version
 
 ```bash
-# Option 1 – unset in the same shell session
-unset NODE_AUTH_TOKEN
-
-# Option 2 – override inline
-NODE_AUTH_TOKEN="" npm publish --provenance --access public
+npm -v
 ```
 
-Or use a workflow step with an explicit override:
+Ensure:
+
+```
+>= 11.5.1
+```
+
+
+### Verify permissions
 
 ```yaml
-- run: npm publish --provenance --access public
-  env:
-    NODE_AUTH_TOKEN: ''
+permissions:
+  contents: read
+  id-token: write
 ```
+
+
+### Check for conflicting auth variables (optional)
+
+```bash
+env | grep NODE_AUTH_TOKEN
+```
+
+Unset if needed:
+
+```bash
+unset NODE_AUTH_TOKEN
+```
+
 
 ## Use private mirror
 
