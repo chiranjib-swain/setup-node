@@ -453,7 +453,7 @@ npm supports [Trusted Publishers](https://docs.npmjs.com/trusted-publishers), wh
 Trusted publishing improves security by eliminating long-lived npm tokens and using short-lived OIDC credentials.
 
 
-## Requirements
+### Requirements
 
 Trusted publishing requires a compatible npm version:
 
@@ -463,7 +463,7 @@ Trusted publishing requires a compatible npm version:
 > ⚠️ If npm is below 11.5.1, publishing will fail even if OIDC permissions are correctly configured.
 
 
-## Example workflow
+### Example workflow
 
 ```yaml
 name: Publish to npm
@@ -492,7 +492,7 @@ jobs:
       - run: npm publish --provenance --access public
 ```
 
-## Important
+### Important
 
 * `id-token: write` is required for OIDC authentication
 * `contents: read` is required for repository access
@@ -500,7 +500,7 @@ jobs:
 OIDC authentication is handled automatically via GitHub’s identity token.
 
 
-## Authentication note
+### Authentication note
 
 `NODE_AUTH_TOKEN` is **not required** for Trusted Publisher (OIDC).
 
@@ -510,55 +510,20 @@ OIDC authentication is handled automatically via GitHub’s identity token.
 > Recommended: **Do not set `NODE_AUTH_TOKEN`** when using OIDC to avoid unexpected conflicts.
 
 
-## Compatibility note
+### Compatibility note
 
 * OIDC publishing depends on npm support (≥ 11.5.1)
 * Using older Node.js versions (with older npm) will result in authentication failures
 * Clearing or unsetting `NODE_AUTH_TOKEN` **does not resolve failures caused by incompatible npm versions**
 
 
-## FAQ
+### FAQ
 
-### Do I need to set `NODE_AUTH_TOKEN` for Trusted Publisher (OIDC)?
+**Q: Do I need to set `NODE_AUTH_TOKEN` for Trusted Publisher (OIDC)?**
 
 No. OIDC replaces the need for tokens entirely.
 
 
-## Troubleshooting
-
-### Check npm version
-
-```bash
-npm -v
-```
-
-Ensure:
-
-```
->= 11.5.1
-```
-
-
-### Verify permissions
-
-```yaml
-permissions:
-  contents: read
-  id-token: write
-```
-
-
-### Check for conflicting auth variables (optional)
-
-```bash
-env | grep NODE_AUTH_TOKEN
-```
-
-Unset if needed:
-
-```bash
-unset NODE_AUTH_TOKEN
-```
 
 
 ## Use private mirror
