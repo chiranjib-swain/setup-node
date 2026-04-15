@@ -450,7 +450,7 @@ Please refer to the [Ensuring workflow access to your package - Configuring a pa
 
 npm supports [Trusted Publishers](https://docs.npmjs.com/trusted-publishers), which allow publishing packages from GitHub Actions using OpenID Connect (OIDC) instead of long-lived tokens.
 
-Trusted publishing improves security by eliminating long-lived npm tokens and using short-lived OIDC credentials.
+Trusted publishing improves security by eliminating long-lived npm tokens and using short-lived OIDC credentials. This approach reduces the risk of credential leakage and simplifies authentication in CI/CD workflows
 
 
 ### Requirements
@@ -497,12 +497,19 @@ jobs:
 
 * `id-token: write` is required for OIDC authentication
 * `contents: read` is required for repository access
-* If you configured a Trusted Publisher to require a GitHub Actions **environment**, you must set it on the job (e.g. `environment: release`).
+* If a Trusted Publisher is configured with a GitHub Actions environment, it must also be set on the job (e.g. `environment: release`).
 
 OIDC authentication is handled automatically via GitHub’s identity token.
 
 > ⚠️ If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run, publishing may fail with **E404 Not Found** even if the package exists in the registry.
 
+### How authentication works
+
+When running in a supported CI environment, npm:
+
+* Detects the OIDC environment
+* Attempts OIDC-based authentication
+* Falls back to token-based authentication if OIDC is not available
 
 ### Authentication note
 
@@ -529,7 +536,10 @@ OIDC authentication is handled automatically via GitHub’s identity token.
   - run: npm install -g npm@latest 
   - run: npm publish --access public
   ```
+### Limitations
 
+* Trusted publishing is supported only on GitHub-hosted runners.
+* Self-hosted runners are not currently supported but are planned for future releases.
 
 ### FAQ
 
