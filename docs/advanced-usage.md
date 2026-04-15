@@ -563,10 +563,10 @@ npm -v
 ```
 
 Ensure it is ≥ 11.5.1
-* Ensure id-token: write permission is set
-* Check that the workflow filename matches exactly (including .yml)
-* Ensure the repository and organization match npm configuration
-* Ensure repository.url in package.json matches your GitHub repository
+* Ensure `id-token: write` permission is set
+* Check that the workflow filename matches exactly (including `.yml`)
+* Ensure the repository and organization match `npm` configuration
+* Ensure `repository.url` in `package.json` matches your GitHub repository
 
 ### References
 
