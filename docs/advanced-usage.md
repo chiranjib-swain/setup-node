@@ -462,6 +462,7 @@ Trusted publishing requires a compatible npm version:
 
 > ⚠️ If npm is below 11.5.1, publishing will fail even if OIDC permissions are correctly configured.
 
+You must also configure a **Trusted Publisher** in npm for your package/scope that matches your GitHub repository and workflow (and optional environment, if used).
 
 ### Example workflow
 
@@ -481,7 +482,7 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
@@ -497,11 +498,11 @@ jobs:
 
 * `id-token: write` is required for OIDC authentication
 * `contents: read` is required for repository access
-* If a Trusted Publisher is configured with a GitHub Actions environment, it must also be set on the job (e.g. `environment: release`).
+* If a Trusted Publisher is configured with a GitHub Actions **environment**, it must also be set on the job (e.g. `environment: release`).
 
 OIDC authentication is handled automatically via GitHub’s identity token.
 
-> ⚠️ If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run, publishing may fail with **E404 Not Found** even if the package exists in the registry.
+> ⚠️ If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run identity exactly, publishing may fail with **E404 Not Found** even if the package exists on npm.
 
 ### How authentication works
 
@@ -549,7 +550,7 @@ No. OIDC replaces the need for tokens entirely.
 
 **Q: My package exists on npm, but `npm publish` fails with `E404 Not Found`. Why?**
 
-This usually indicates that the Trusted Publisher configuration does not exactly match the workflow run (repository, workflow filename, or environment), or that the workflow does not have permission to publish to the package or scope.
+This usually indicates that the Trusted Publisher configuration does not exactly match the workflow run identity (repository, workflow filename, or environment), or that the workflow does not have permission to publish to the package or scope.
 
 All fields are case-sensitive and must match exactly.
 
