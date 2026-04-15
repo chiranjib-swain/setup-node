@@ -483,38 +483,52 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org/'
 
       - run: npm ci
-      - run: npm publish --provenance --access public
+      - run: npm run build --if-present
+      - run: npm publish --access public
 ```
 
 ### Important
 
 * `id-token: write` is required for OIDC authentication
 * `contents: read` is required for repository access
+* If you configured a Trusted Publisher to require a GitHub Actions **environment**, you must set it on the job (e.g. `environment: release`).
 
 OIDC authentication is handled automatically via GitHub’s identity token.
+
+> ⚠️ If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run, publishing may fail with **E404 Not Found** even if the package exists in the registry.
 
 
 ### Authentication note
 
 `NODE_AUTH_TOKEN` is **not required** for Trusted Publisher (OIDC).
 
-* If present, it may be ignored when OIDC is correctly configured
-* However, behavior can vary depending on workflow setup and injected environment variables
-
-> Recommended: **Do not set `NODE_AUTH_TOKEN`** when using OIDC to avoid unexpected conflicts.
+* If present, it may interfere with OIDC by causing npm to attempt token-based authentication instead.
+* Recommended: **Do not set `NODE_AUTH_TOKEN`** (and consider unsetting `NODE_AUTH_TOKEN`, `NPM_TOKEN`, and `NPM_AUTH_TOKEN`) when using OIDC to avoid unexpected conflicts.
 
 
 ### Compatibility note
 
-* OIDC publishing depends on npm support (≥ 11.5.1)
-* Using older Node.js versions (with older npm) will result in authentication failures
-* Clearing or unsetting `NODE_AUTH_TOKEN` **does not resolve failures caused by incompatible npm versions**
+* OIDC publishing depends on npm support (≥ 11.5.1).
+* Using older Node.js versions (with older npm) can result in authentication failures.
+* Clearing or unsetting `NODE_AUTH_TOKEN` **does not resolve failures caused by incompatible npm versions**.
+* If you need to use an older Node.js version, upgrade npm before publishing (example):
+
+  ```yaml
+  - uses: actions/setup-node@v6
+    with:
+      node-version: 20
+      registry-url: 'https://registry.npmjs.org/'
+
+  # Ensure npm 11.5.1 or later is installed
+  - run: npm install -g npm@latest 
+  - run: npm publish --access public
+  ```
 
 
 ### FAQ
@@ -523,8 +537,31 @@ OIDC authentication is handled automatically via GitHub’s identity token.
 
 No. OIDC replaces the need for tokens entirely.
 
+**Q: My package exists on npm, but `npm publish` fails with `E404 Not Found`. Why?**
+
+This usually indicates that the Trusted Publisher configuration does not exactly match the workflow run (repository, workflow filename, or environment), or that the workflow does not have permission to publish to the package or scope.
+
+All fields are case-sensitive and must match exactly.
 
 
+
+### Troubleshooting
+
+* Verify npm version:
+```yaml
+npm -v
+```
+
+Ensure it is ≥ 11.5.1
+* Ensure id-token: write permission is set
+* Check that the workflow filename matches exactly (including .yml)
+* Ensure the repository and organization match npm configuration
+* Ensure repository.url in package.json matches your GitHub repository
+
+### References
+
+* https://docs.npmjs.com/trusted-publishers 
+* https://docs.github.com/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect 
 
 ## Use private mirror
 
