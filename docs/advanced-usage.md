@@ -479,7 +479,7 @@ Please refer to the [Ensuring workflow access to your package - Configuring a pa
 
 npm supports [Trusted Publishers](https://docs.npmjs.com/trusted-publishers), which allow publishing packages from GitHub Actions using OpenID Connect (OIDC) instead of long-lived tokens.
 
-Trusted publishing improves security by eliminating long-lived npm tokens and using short-lived OIDC credentials. This approach reduces the risk of credential leakage and simplifies authentication in CI/CD workflows
+Trusted publishing improves security by eliminating long-lived npm tokens and using short-lived OIDC credentials. This approach reduces the risk of credential leakage and simplifies authentication in CI/CD workflows.
 
 
 ### Requirements
@@ -563,7 +563,7 @@ When running in a supported CI environment, npm:
       registry-url: 'https://registry.npmjs.org/'
 
   # Ensure npm 11.5.1 or later is installed
-  - run: npm install -g npm@latest 
+  - run: npm install -g npm@latest
   - run: npm publish --access public
   ```
 ### Limitations
@@ -588,9 +588,8 @@ All fields are case-sensitive and must match exactly.
 ### Troubleshooting
 
 * Verify npm version:
-```yaml
-npm -v
-```
+  ```sh
+  npm -v
 
 Ensure it is ≥ 11.5.1
 * Ensure `id-token: write` permission is set
@@ -600,8 +599,8 @@ Ensure it is ≥ 11.5.1
 
 ### References
 
-* https://docs.npmjs.com/trusted-publishers 
-* https://docs.github.com/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect 
+* https://docs.npmjs.com/trusted-publishers
+* https://docs.github.com/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
 
 ## Use private mirror
 
