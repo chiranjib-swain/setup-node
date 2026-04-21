@@ -475,6 +475,134 @@ To access private GitHub Packages within the same organization, go to "Manage Ac
 
 Please refer to the [Ensuring workflow access to your package - Configuring a package's access control and visibility](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#ensuring-workflow-access-to-your-package) for more details.
 
+## Publishing to npm with Trusted Publisher (OIDC)
+
+npm supports [Trusted Publishers](https://docs.npmjs.com/trusted-publishers), which allow publishing packages from GitHub Actions using OpenID Connect (OIDC) instead of long-lived tokens.
+
+Trusted publishing improves security by eliminating long-lived npm tokens and using short-lived OIDC credentials. This approach reduces the risk of credential leakage and simplifies authentication in CI/CD workflows
+
+
+### Requirements
+
+Trusted publishing requires a compatible npm version:
+
+* **npm ≥ 11.5.1 (required)**
+* **Node.js 24 or newer (recommended)** — includes a compatible npm version by default
+
+> ⚠️ If npm is below 11.5.1, publishing will fail even if OIDC permissions are correctly configured.
+
+You must also configure a **Trusted Publisher** in npm for your package/scope that matches your GitHub repository and workflow (and optional environment, if used).
+
+### Example workflow
+
+```yaml
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org/'
+
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm publish --access public
+```
+
+### Important
+
+* `id-token: write` is required for OIDC authentication
+* `contents: read` is required for repository access
+* If a Trusted Publisher is configured with a GitHub Actions **environment**, it must also be set on the job (e.g. `environment: release`).
+
+OIDC authentication is handled automatically via GitHub’s identity token.
+
+> ⚠️ If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run identity exactly, publishing may fail with **E404 Not Found** even if the package exists on npm.
+
+### How authentication works
+
+When running in a supported CI environment, npm:
+
+* Detects the OIDC environment
+* Attempts OIDC-based authentication
+* Falls back to token-based authentication if OIDC is not available
+
+### Authentication note
+
+`NODE_AUTH_TOKEN` is **not required** for Trusted Publisher (OIDC).
+
+* If present, it may interfere with OIDC by causing npm to attempt token-based authentication instead.
+* Recommended: **Do not set `NODE_AUTH_TOKEN`** (and consider unsetting `NODE_AUTH_TOKEN`, `NPM_TOKEN`, and `NPM_AUTH_TOKEN`) when using OIDC to avoid unexpected conflicts.
+
+
+### Compatibility note
+
+* OIDC publishing depends on npm support (≥ 11.5.1).
+* Using older Node.js versions (with older npm) can result in authentication failures.
+* Clearing or unsetting `NODE_AUTH_TOKEN` **does not resolve failures caused by incompatible npm versions**.
+* If you need to use an older Node.js version, upgrade npm before publishing (example):
+
+  ```yaml
+  - uses: actions/setup-node@v6
+    with:
+      node-version: 20
+      registry-url: 'https://registry.npmjs.org/'
+
+  # Ensure npm 11.5.1 or later is installed
+  - run: npm install -g npm@latest 
+  - run: npm publish --access public
+  ```
+### Limitations
+
+* Trusted publishing is supported only on GitHub-hosted runners.
+* Self-hosted runners are not currently supported but are planned for future releases.
+
+### FAQ
+
+**Q: Do I need to set `NODE_AUTH_TOKEN` for Trusted Publisher (OIDC)?**
+
+No. OIDC replaces the need for tokens entirely.
+
+**Q: My package exists on npm, but `npm publish` fails with `E404 Not Found`. Why?**
+
+This usually indicates that the Trusted Publisher configuration does not exactly match the workflow run identity (repository, workflow filename, or environment), or that the workflow does not have permission to publish to the package or scope.
+
+All fields are case-sensitive and must match exactly.
+
+
+
+### Troubleshooting
+
+* Verify npm version:
+```yaml
+npm -v
+```
+
+Ensure it is ≥ 11.5.1
+* Ensure `id-token: write` permission is set
+* Check that the workflow filename matches exactly (including `.yml`)
+* Ensure the repository and organization match `npm` configuration
+* Ensure `repository.url` in `package.json` matches your GitHub repository
+
+### References
+
+* https://docs.npmjs.com/trusted-publishers 
+* https://docs.github.com/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect 
+
 ## Use private mirror
 
 It is possible to use a private mirror hosting Node.js binaries. This mirror must be a full mirror of the official Node.js distribution.
