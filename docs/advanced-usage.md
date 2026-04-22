@@ -496,16 +496,6 @@ You must also configure a **Trusted Publisher** in npm for your package/scope th
 ### Example workflow
 
 ```yaml
-name: Publish to npm
-
-on:
-  push:
-    tags:
-      - 'v*'
-
-jobs:
-  publish:
-    runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
@@ -533,69 +523,6 @@ OIDC authentication is handled automatically via GitHub’s identity token.
 
 > ⚠️ If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run identity exactly, publishing may fail with **E404 Not Found** even if the package exists on npm.
 
-### How authentication works
-
-When running in a supported CI environment, npm:
-
-* Detects the OIDC environment
-* Attempts OIDC-based authentication
-* Falls back to token-based authentication if OIDC is not available
-
-### Authentication note
-
-`NODE_AUTH_TOKEN` is **not required** for Trusted Publisher (OIDC).
-
-* If present, it may interfere with OIDC by causing npm to attempt token-based authentication instead.
-* Recommended: **Do not set `NODE_AUTH_TOKEN`** (and consider unsetting `NODE_AUTH_TOKEN`, `NPM_TOKEN`, and `NPM_AUTH_TOKEN`) when using OIDC to avoid unexpected conflicts.
-
-
-### Compatibility note
-
-* OIDC publishing depends on npm support (≥ 11.5.1).
-* Using older Node.js versions (with older npm) can result in authentication failures.
-* Clearing or unsetting `NODE_AUTH_TOKEN` **does not resolve failures caused by incompatible npm versions**.
-* If you need to use an older Node.js version, upgrade npm before publishing (example):
-
-  ```yaml
-  - uses: actions/setup-node@v6
-    with:
-      node-version: 20
-      registry-url: 'https://registry.npmjs.org/'
-
-  # Ensure npm 11.5.1 or later is installed
-  - run: npm install -g npm@latest
-  - run: npm publish --access public
-  ```
-### Limitations
-
-* Trusted publishing is supported only on GitHub-hosted runners.
-* Self-hosted runners are not currently supported but are planned for future releases.
-
-### FAQ
-
-**Q: Do I need to set `NODE_AUTH_TOKEN` for Trusted Publisher (OIDC)?**
-
-No. OIDC replaces the need for tokens entirely.
-
-**Q: My package exists on npm, but `npm publish` fails with `E404 Not Found`. Why?**
-
-This usually indicates that the Trusted Publisher configuration does not exactly match the workflow run identity (repository, workflow filename, or environment), or that the workflow does not have permission to publish to the package or scope.
-
-All fields are case-sensitive and must match exactly.
-
-
-
-### Troubleshooting
-
-* Verify npm version:
-  ```sh
-  npm -v
-
-Ensure it is ≥ 11.5.1
-* Ensure `id-token: write` permission is set
-* Check that the workflow filename matches exactly (including `.yml`)
-* Ensure the repository and organization match `npm` configuration
-* Ensure `repository.url` in `package.json` matches your GitHub repository
 
 ### References
 
