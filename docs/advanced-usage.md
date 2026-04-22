@@ -477,7 +477,7 @@ Please refer to the [Ensuring workflow access to your package - Configuring a pa
 
 ## Publishing to npm with Trusted Publisher (OIDC)
 
-npm supports [Trusted Publishers](https://docs.npmjs.com/trusted-publishers), which allow publishing packages from GitHub Actions using OpenID Connect (OIDC) instead of long-lived tokens.
+Npm supports [Trusted Publishers](https://docs.npmjs.com/trusted-publishers), which allow publishing packages from GitHub Actions using OpenID Connect (OIDC) instead of long-lived tokens.
 
 Trusted publishing improves security by eliminating long-lived npm tokens and using short-lived OIDC credentials. This approach reduces the risk of credential leakage and simplifies authentication in CI/CD workflows.
 
