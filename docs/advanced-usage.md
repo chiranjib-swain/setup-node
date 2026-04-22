@@ -477,7 +477,7 @@ Please refer to the [Ensuring workflow access to your package - Configuring a pa
 
 ## Publishing to npm with Trusted Publisher (OIDC)
 
-Npm supports [Trusted Publishers](https://docs.npmjs.com/trusted-publishers), enabling packages to be published from GitHub Actions using OpenID Connect (OIDC) instead of long-lived npm tokens. This improves security by replacing static credentials with short-lived tokens, reducing the risk of credential leakage and simplifying authentication in CI/CD workflows.
+Npm supports Trusted Publishers, enabling packages to be published from GitHub Actions using OpenID Connect (OIDC) instead of long-lived npm tokens. This improves security by replacing static credentials with short-lived tokens, reducing the risk of credential leakage and simplifying authentication in CI/CD workflows.
 
 ### Requirements
 
@@ -507,7 +507,7 @@ You must also configure a **Trusted Publisher** in npm for your package/scope th
 
       - run: npm ci
       - run: npm run build --if-present
-      - run: npm publish --access public
+      - run: npm publish
 ```
 
 ### Important
@@ -518,13 +518,9 @@ You must also configure a **Trusted Publisher** in npm for your package/scope th
 
 OIDC authentication is handled automatically via GitHub’s identity token.
 
-> If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run identity exactly, publishing may fail with **E404 Not Found** even if the package exists on npm.
+> **Note**: If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run identity exactly, publishing may fail with **E404 Not Found** even if the package exists on npm.
 
-
-### References
-
-- [npm Trusted Publishers documentation](https://docs.npmjs.com/trusted-publishers)
-- [GitHub Actions OpenID Connect (OIDC) overview](https://docs.github.com/en/actions/concepts/security/openid-connect)
+For more details, see the [npm Trusted Publishers documentation](https://docs.npmjs.com/trusted-publishers) and the [GitHub Actions OpenID Connect (OIDC) overview](https://docs.github.com/en/actions/concepts/security/openid-connect).
 
 ## Use private mirror
 
