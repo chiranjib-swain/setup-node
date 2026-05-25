@@ -40,15 +40,35 @@ function writeRegistryToFile(registryUrl: string, fileLocation: string) {
     });
   }
   // Remove http: or https: from front of registry.
-  const authString: string =
-    registryUrl.replace(/(^\w+:|^)/, '') + ':_authToken=${NODE_AUTH_TOKEN}';
   const registryString = `${scope}registry=${registryUrl}`;
-  newContents += `${authString}${os.EOL}${registryString}`;
+
+  // Detect scenario
+  const isOIDC = !!process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN'];
+  const hasNodeAuthToken =
+    !!process.env.NODE_AUTH_TOKEN && process.env.NODE_AUTH_TOKEN.trim() !== '';
+
+  if (isOIDC) {
+    // OIDC: do not write _authToken, do not export token.
+    core.info(
+      'OIDC detected: not injecting _authToken, not exporting NODE_AUTH_TOKEN.'
+    );
+    newContents += `${registryString}`;
+    // Do NOT export NODE_AUTH_TOKEN
+  } else if (hasNodeAuthToken) {
+    // Classic token: inject auth line and export for subsequent steps
+    const authString =
+      registryUrl.replace(/(^\w+:|^)/, '') + ':_authToken=${NODE_AUTH_TOKEN}';
+    newContents += `${authString}${os.EOL}${registryString}`;
+    core.exportVariable('NODE_AUTH_TOKEN', process.env.NODE_AUTH_TOKEN!);
+  } else {
+    // No token, no OIDC: just write registry, don't export anything, don't break .npmrc
+    core.info(
+      'No NODE_AUTH_TOKEN provided and OIDC not detected: only writing registry URL.'
+    );
+    newContents += `${registryString}`;
+    // Do NOT export NODE_AUTH_TOKEN
+  }
+
   fs.writeFileSync(fileLocation, newContents);
   core.exportVariable('NPM_CONFIG_USERCONFIG', fileLocation);
-  // Export empty node_auth_token if didn't exist so npm doesn't complain about not being able to find it
-  core.exportVariable(
-    'NODE_AUTH_TOKEN',
-    process.env.NODE_AUTH_TOKEN || 'XXXXX-XXXXX-XXXXX-XXXXX'
-  );
 }
