@@ -410,9 +410,9 @@ jobs:
 
 ## Publish to npmjs and GPR with npm
 
-> **Note:** Always set `package-manager-cache: false` in publish workflows. Omitting `cache:`
-> alone is not enough — automatic caching can still activate via the `packageManager` field in
-> `package.json`. See [Security: disable caching in release workflows](#security-disable-caching-in-release-workflows).
+> **Note:** Always set `package-manager-cache: false` in publish workflows. Automatic caching
+> can still activate even without the `cache:` input (see [Running without a lockfile](#running-without-a-lockfile)).
+> See [Security: disable caching in release workflows](#security-disable-caching-in-release-workflows) for the security rationale.
 
 ```yaml
 steps:
@@ -437,9 +437,9 @@ steps:
 
 ## Publish to npmjs and GPR with yarn
 
-> **Note:** Always set `package-manager-cache: false` in publish workflows. Omitting `cache:`
-> alone is not enough — automatic caching can still activate via the `packageManager` field in
-> `package.json`. See [Security: disable caching in release workflows](#security-disable-caching-in-release-workflows).
+> **Note:** Always set `package-manager-cache: false` in publish workflows. Automatic caching
+> can still activate even without the `cache:` input (see [Running without a lockfile](#running-without-a-lockfile)).
+> See [Security: disable caching in release workflows](#security-disable-caching-in-release-workflows) for the security rationale.
 
 ```yaml
 steps:
@@ -521,11 +521,10 @@ You must also configure a **Trusted Publisher** in npm for your package/scope th
 
 ### Security: disable caching in release workflows
 
-> **Warning:** Set `package-manager-cache: false` in all publish workflows. Omitting `cache:`
-> alone is not enough — `package-manager-cache` can silently enable caching when a `packageManager`
-> field is detected in `package.json`. A poisoned cache can expose credentials (including OIDC
-> tokens) to attacker-controlled code on the runner. See the
-> [TanStack supply-chain compromise (May 2026)](https://tanstack.com/blog/npm-supply-chain-compromise-postmortem).
+> **Warning:** Set `package-manager-cache: false` in all publish workflows. Automatic caching
+> can still activate even without the `cache:` input (see [Running without a lockfile](#running-without-a-lockfile)).
+> A poisoned cache can expose credentials (including OIDC tokens) to attacker-controlled code on
+> the runner. See the [TanStack supply-chain compromise (May 2026)](https://tanstack.com/blog/npm-supply-chain-compromise-postmortem).
 
 ### Example workflow
 
