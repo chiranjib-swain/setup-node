@@ -409,6 +409,11 @@ jobs:
 ```
 
 ## Publish to npmjs and GPR with npm
+
+> **Note:** Always set `package-manager-cache: false` in publish workflows. Omitting `cache:`
+> alone is not enough — automatic caching can still activate via the `packageManager` field in
+> `package.json`. See [Security: disable caching in release workflows](#security-disable-caching-in-release-workflows).
+
 ```yaml
 steps:
 - uses: actions/checkout@v6
@@ -416,6 +421,7 @@ steps:
   with:
     node-version: '24.x'
     registry-url: 'https://registry.npmjs.org'
+    package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
 - run: npm ci
 - run: npm publish
   env:
@@ -423,12 +429,18 @@ steps:
 - uses: actions/setup-node@v6
   with:
     registry-url: 'https://npm.pkg.github.com'
+    package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
 - run: npm publish
   env:
     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Publish to npmjs and GPR with yarn
+
+> **Note:** Always set `package-manager-cache: false` in publish workflows. Omitting `cache:`
+> alone is not enough — automatic caching can still activate via the `packageManager` field in
+> `package.json`. See [Security: disable caching in release workflows](#security-disable-caching-in-release-workflows).
+
 ```yaml
 steps:
 - uses: actions/checkout@v6
@@ -436,6 +448,7 @@ steps:
   with:
     node-version: '24.x'
     registry-url: <registry url>
+    package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
 - run: yarn install --frozen-lockfile
 - run: yarn publish
   env:
@@ -443,6 +456,7 @@ steps:
 - uses: actions/setup-node@v6
   with:
     registry-url: 'https://npm.pkg.github.com'
+    package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
 - run: yarn publish
   env:
     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -505,6 +519,14 @@ Trusted publishing requires a compatible npm version:
 
 You must also configure a **Trusted Publisher** in npm for your package/scope that matches your GitHub repository and workflow (and optional environment, if used).
 
+### Security: disable caching in release workflows
+
+> **Warning:** Set `package-manager-cache: false` in all publish workflows. Omitting `cache:`
+> alone is not enough — `package-manager-cache` can silently enable caching when a `packageManager`
+> field is detected in `package.json`. A poisoned cache can expose credentials (including OIDC
+> tokens) to attacker-controlled code on the runner. See the
+> [TanStack supply-chain compromise (May 2026)](https://tanstack.com/blog/npm-supply-chain-compromise-postmortem).
+
 ### Example workflow
 
 ```yaml
@@ -519,6 +541,7 @@ You must also configure a **Trusted Publisher** in npm for your package/scope th
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
 
       - run: npm ci
       - run: npm run build --if-present
