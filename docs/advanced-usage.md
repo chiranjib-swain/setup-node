@@ -416,7 +416,7 @@ steps:
   with:
     node-version: '24.x'
     registry-url: 'https://registry.npmjs.org'
-    package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
+    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 - run: npm ci
 - run: npm publish
   env:
@@ -424,7 +424,7 @@ steps:
 - uses: actions/setup-node@v6
   with:
     registry-url: 'https://npm.pkg.github.com'
-    package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
+    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 - run: npm publish
   env:
     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -509,8 +509,9 @@ You must also configure a **Trusted Publisher** in npm for your package/scope th
 
 ### Security: disable caching in release workflows
 
-> **Warning:** Set `package-manager-cache: false` in all publish workflows. Automatic caching
-> can still activate even without the `cache:` input (see [Running without a lockfile](#running-without-a-lockfile)).
+> **Warning:** Set `package-manager-cache: false` in all workflows that publish npm packages.
+> Automatic npm dependency caching can still activate even without the `cache:` input (see
+> [Running without a lockfile](#running-without-a-lockfile)).
 > A poisoned cache can expose credentials (including OIDC tokens) to attacker-controlled code on
 > the runner.
 
@@ -528,7 +529,7 @@ You must also configure a **Trusted Publisher** in npm for your package/scope th
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-          package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 
       - run: npm ci
       - run: npm run build --if-present
