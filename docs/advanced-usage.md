@@ -409,8 +409,6 @@ jobs:
 ```
 
 ## Publish to npmjs and GPR with npm
-
-
 ```yaml
 steps:
 - uses: actions/checkout@v6
@@ -433,8 +431,6 @@ steps:
 ```
 
 ## Publish to npmjs and GPR with yarn
-
-
 ```yaml
 steps:
 - uses: actions/checkout@v6
