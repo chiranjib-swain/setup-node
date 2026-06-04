@@ -412,7 +412,6 @@ jobs:
 
 > **Note:** Always set `package-manager-cache: false` in publish workflows. Automatic caching
 > can still activate even without the `cache:` input (see [Running without a lockfile](#running-without-a-lockfile)).
-> See [Security: disable caching in release workflows](#security-disable-caching-in-release-workflows) for the security rationale.
 
 ```yaml
 steps:
@@ -437,9 +436,6 @@ steps:
 
 ## Publish to npmjs and GPR with yarn
 
-> **Note:** Always set `package-manager-cache: false` in publish workflows. Automatic caching
-> can still activate even without the `cache:` input (see [Running without a lockfile](#running-without-a-lockfile)).
-> See [Security: disable caching in release workflows](#security-disable-caching-in-release-workflows) for the security rationale.
 
 ```yaml
 steps:
@@ -448,7 +444,6 @@ steps:
   with:
     node-version: '24.x'
     registry-url: <registry url>
-    package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
 - run: yarn install --frozen-lockfile
 - run: yarn publish
   env:
@@ -456,7 +451,6 @@ steps:
 - uses: actions/setup-node@v6
   with:
     registry-url: 'https://npm.pkg.github.com'
-    package-manager-cache: false  # Disable automatic package manager caching to reduce cache poisoning risk
 - run: yarn publish
   env:
     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
