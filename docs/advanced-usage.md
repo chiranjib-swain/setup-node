@@ -410,8 +410,6 @@ jobs:
 
 ## Publish to npmjs and GPR with npm
 
-> **Note:** Always set `package-manager-cache: false` in publish workflows. Automatic caching
-> can still activate even without the `cache:` input (see [Running without a lockfile](#running-without-a-lockfile)).
 
 ```yaml
 steps:
@@ -518,7 +516,7 @@ You must also configure a **Trusted Publisher** in npm for your package/scope th
 > **Warning:** Set `package-manager-cache: false` in all publish workflows. Automatic caching
 > can still activate even without the `cache:` input (see [Running without a lockfile](#running-without-a-lockfile)).
 > A poisoned cache can expose credentials (including OIDC tokens) to attacker-controlled code on
-> the runner. See the [TanStack supply-chain compromise (May 2026)](https://tanstack.com/blog/npm-supply-chain-compromise-postmortem).
+> the runner.
 
 ### Example workflow
 

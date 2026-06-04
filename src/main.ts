@@ -68,18 +68,6 @@ export async function run() {
 
     const cacheDependencyPath = core.getInput('cache-dependency-path');
 
-    // Warn when OIDC publish is active (id-token: write) and caching is not explicitly
-    // disabled. A poisoned cache can expose the OIDC token to attacker-controlled code.
-    // See: https://tanstack.com/blog/npm-supply-chain-compromise-postmortem
-    const isOIDC = !!process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN'];
-    if (isOIDC && (cache || packagemanagercache)) {
-      core.warning(
-        'Cache is enabled in a workflow that has OIDC publish permissions (id-token: write). ' +
-          'A poisoned cache can allow attacker-controlled code to extract the OIDC token and ' +
-          'publish malicious package versions. Set `package-manager-cache: false` in release workflows.'
-      );
-    }
-
     if (isCacheFeatureAvailable()) {
       // if the cache input is provided, use it for caching.
       if (cache) {
