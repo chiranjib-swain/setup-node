@@ -507,7 +507,7 @@ Trusted publishing requires a compatible npm version:
 
 You must also configure a **Trusted Publisher** in npm for your package/scope that matches your GitHub repository and workflow (and optional environment, if used).
 
-> **Note**: Set `package-manager-cache: false` in publishing workflows because automatic npm caching can activate even without the `cache:` input, and a poisoned cache may expose credentials (including OIDC tokens) to attacker-controlled code.
+> **Note**: In publishing workflows, set `package-manager-cache: false` because setup-node enables npm caching automatically when `package.json` specifies npm via `packageManager` or `devEngines.packageManager` (see [Running without a lockfile](#running-without-a-lockfile)), and a poisoned cache may expose credentials (including OIDC tokens) to attacker-controlled code.
 
 ### Example workflow
 
