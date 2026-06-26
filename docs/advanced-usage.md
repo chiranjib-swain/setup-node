@@ -69,6 +69,7 @@ steps:
   with:
     node-version: '24'
     check-latest: true
+    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 - run: npm ci
 - run: npm test
 ```
@@ -131,6 +132,7 @@ jobs:
         with:
           node-version: '24'
           architecture: 'x64' # optional, x64 or x86. If not specified, x64 will be used by default
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -151,6 +153,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.0.0-v8-canary' # it will install the latest v8 canary release for node 24.0.0
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -166,6 +169,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24-v8-canary' # it will install the latest v8 canary release for node 24
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -182,6 +186,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 'v24.0.0-v8-canary2025030537242e55ac'
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -202,6 +207,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24-nightly' # it will install the latest nightly release for node 24
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -218,6 +224,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.0.0-nightly' # it will install the latest nightly release for node 24.0.0
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -234,6 +241,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.0.0-nightly202505066102159fa1'
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -252,6 +260,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.0.0-rc.4'
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -404,6 +413,7 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
           architecture: ${{ matrix.architecture }}
+          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
       - run: npm ci
       - run: npm test
 ```
@@ -438,6 +448,7 @@ steps:
   with:
     node-version: '24.x'
     registry-url: <registry url>
+    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 - run: yarn install --frozen-lockfile
 - run: yarn publish
   env:
@@ -445,6 +456,7 @@ steps:
 - uses: actions/setup-node@v6
   with:
     registry-url: 'https://npm.pkg.github.com'
+    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 - run: yarn publish
   env:
     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -458,6 +470,7 @@ steps:
   with:
     node-version: '24.x'
     registry-url: 'https://registry.npmjs.org'
+    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 # Skip post-install scripts here, as a malicious
 # script could steal NODE_AUTH_TOKEN.
 - run: npm ci --ignore-scripts
@@ -477,6 +490,7 @@ steps:
 - uses: actions/setup-node@v6
   with:
     node-version: '24.x'
+    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 - name: Setup .yarnrc.yml
   run: |
     yarn config set npmScopes.my-org.npmRegistryServer "https://npm.pkg.github.com"
