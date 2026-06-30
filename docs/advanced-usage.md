@@ -561,4 +561,5 @@ The token will be passed in the `Authorization` header.
     node-version: '24.x'
     mirror: 'https://nodejs.org/dist'
     mirror-token: 'your-mirror-token'
+    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
 ```
