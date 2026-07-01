@@ -87,6 +87,7 @@ steps:
 - uses: actions/setup-node@v6
   with:
     node-version-file: '.nvmrc'
+    package-manager-cache: false  # Disable automatic npm caching if not required
 - run: npm ci
 - run: npm test
 ```
@@ -353,6 +354,7 @@ steps:
   uses: actions/setup-node@v6
   with:
     node-version: '24'
+    package-manager-cache: false  # Disable automatic npm caching if not required
 
 - name: Normalize runner architecture
   shell: bash
