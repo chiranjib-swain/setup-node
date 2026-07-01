@@ -69,7 +69,7 @@ steps:
   with:
     node-version: '24'
     check-latest: true
-    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+    package-manager-cache: false  # Disable automatic npm caching if not required
 - run: npm ci
 - run: npm test
 ```
@@ -132,7 +132,7 @@ jobs:
         with:
           node-version: '24'
           architecture: 'x64' # optional, x64 or x86. If not specified, x64 will be used by default
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -153,7 +153,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.0.0-v8-canary' # it will install the latest v8 canary release for node 24.0.0
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -169,7 +169,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24-v8-canary' # it will install the latest v8 canary release for node 24
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -186,7 +186,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 'v24.0.0-v8-canary2025030537242e55ac'
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -207,7 +207,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24-nightly' # it will install the latest nightly release for node 24
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -224,7 +224,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.0.0-nightly' # it will install the latest nightly release for node 24.0.0
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -241,7 +241,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.0.0-nightly202505066102159fa1'
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -260,7 +260,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24.0.0-rc.4'
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -413,7 +413,7 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
           architecture: ${{ matrix.architecture }}
-          package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+          package-manager-cache: false  # Disable automatic npm caching if not required
       - run: npm ci
       - run: npm test
 ```
@@ -561,5 +561,5 @@ The token will be passed in the `Authorization` header.
     node-version: '24.x'
     mirror: 'https://nodejs.org/dist'
     mirror-token: 'your-mirror-token'
-    package-manager-cache: false  # Disable automatic npm dependency caching to reduce cache poisoning risk
+    package-manager-cache: false  # Disable automatic npm caching if not required
 ```
